@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta name="author" content="Carson Stevens">
+    <meta name="description" content="">
+    <title></title>
+    <link rel="stylesheet" href="styles.css"/>
+    <script src="https://kit.fontawesome.com/746df76887.js"></script>
+  </head>
+  <body>
+    <header>
+      <!-- Container for Intro -->
+      <section class="heading">
+        <img src="images/GeoGuessr_logo.png" style="width:20%; margin-top: 12vh;"></img>
+      </section>
+      <section class="nav">
+        <ul class="menu">
+          <li><a class="btnpress current-page-btn">Home</a></li>
+          <li class=" btnpress dropdown">
+            <a class="dropbtn">Instructions <em class="drop-arrow fas fa-angle-double-down"></em></a>
+            <section class="dropdown-content">
+              <a href="" target="_blank">Machine Learning</a>
+              <a href="" target="_blank">Python API</a>
+              <a href="" target="_blank">Website</a>
+              <a href="" target="_blank">Data Collection</a>
+            </section>
+          </li>
+        </ul>
+        <section class="theme-switch-wrapper">
+          <label class="theme-switch" for="checkbox">
+              <em>Theme</em>
+              <input type="checkbox" id="checkbox" />
+              <span class="slider round"></span>
+          </label>
+        </section>
+      </section>
+    </header>
+    <section class="index-transition-to-light"></section>
+    <section class="main">
+      <table id="main-table">
+        <tr>
+          <td><iframe id="geoguessr-page" src="https://geoguessr.com/usa/play"></iframe></td>
+          <td>
+            <table id="stats-table">
+              <tr>
+                <th>Real Latitude</th>
+                <th>Guessed Latitude</th>
+                <th>Real Longitude</th>
+                <th>Guessed Longitude</th>
+              </tr>
+              <tr>
+                <td>123</td>
+                <td>456</td>
+                <td>789</td>
+                <td>012</td>
+              </tr>
+              <tr>
+                <td>123</td>
+                <td>456</td>
+                <td>789</td>
+                <td>012</td>
+              </tr>
+              <tr>
+                <td>123</td>
+                <td>456</td>
+                <td>789</td>
+                <td>012</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </section>
+    <section class="index-transition-to-dark"></section>
+    <footer>
+
+    </footer>
+  </body>
+  <script type="text/javascript" src="darktoggle.js"></script>
+</html>
