@@ -1,6 +1,7 @@
 import pandas as pd
 from flask import Flask, jsonify, request
 import pickle
+from  config 
 
 # app
 app = Flask(__name__)
@@ -10,7 +11,7 @@ app = Flask(__name__)
 
 def predict():
     # get data
-    # data = request.get_json(force=True)
+    # data = request.get_json(force = True)
 
     # convert into dataframe
     
@@ -26,6 +27,4 @@ def predict():
     return jsonify(results = output)
 
 if __name__ == '__main__':
-    port = 80
-    debug_status = True
-    app.run(port = port, debug = debug_status)
+    app.run(port = config.FLASK_PORT, debug = debug_status)

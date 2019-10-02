@@ -1,0 +1,2 @@
+FLASK_PORT = 80
+DEBUG_STATUS = True
