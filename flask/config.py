@@ -1,5 +1,9 @@
-FLASK_PORT = 80
+FLASK_PORT = 5000
+FLASK_HOST = "0.0.0.0"
 DEBUG_STATUS = True
+
+# HOST
+EC2_ENDPOINT = "ec2-13-58-133-21.us-east-2.compute.amazonaws.com"
 
 # CNN
 CNN_N_FILTERS = 64
