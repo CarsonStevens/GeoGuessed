@@ -1,5 +1,5 @@
 import pandas as pd
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 import pickle
 from config import *
 import cnn
@@ -8,7 +8,13 @@ app = Flask(__name__)
 app.config['TESTING'] = True
 
 # routes
-@app.route('/', methods = ['POST'])
+@app.route('/', methods = ['GET'])
+def hello():
+    # return 'Welcome to GeoGuessed!'
+    return render_template("index.html", message="Hello Flask!"); 
+    # return render_template("index.html")
+
+@app.route('/predict', methods = ['POST'])
 def predict():
     # get data
     data = request.get_json(force = True)

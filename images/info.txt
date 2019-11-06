@@ -1,0 +1,1 @@
+all images in 10k are renamed with lat lon and are ignored in .gitignore

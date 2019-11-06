@@ -3,8 +3,8 @@ FLASK_HOST = "0.0.0.0"
 DEBUG_STATUS = True
 
 # HOST
-EC2_ENDPOINT = "ec2-13-58-133-21.us-east-2.compute.amazonaws.com"
-
+EC2_ENDPOINT = "http://ec2-52-41-153-127.us-west-2.compute.amazonaws.com"
+EC2_PORT = 5000
 # CNN
 CNN_N_FILTERS = 64
 CNN_KERNEL_SIZE = (3,3)
