@@ -7,79 +7,224 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBW0wAKe8pWDHaZxZJHpN_cE-_ikQkiV7Q"></script>
 
     <script type="text/javascript">	 
-    	function initPano() {
+	  function initPano() {
+        var num_links = 0;
+        // the direction we last moved it
+        var previous_heading = 0;
+        // updated to 1 when 'start bot' button pressed
+        var bot_started = 0;
+        var num_movements = 0;
+        const streetview_url = "https://maps.googleapis.com/maps/api/streetview";
+        const api_url = 'http://localhost:5000/put/image';
+        const streetview_key = 'AIzaSyBW0wAKe8pWDHaZxZJHpN_cE-_ikQkiV7Q';
+        const sequence_base_id = 'sequence_';
+        // const sequence_lengths = [10, 20, 50, 100];
+        // const sequence_iterations = 10;
+        const image_size = '400x400';
+        const fov = '80';
+        const heading = '0';
+        const pitch = '0';
+
         var panorama = new google.maps.StreetViewPanorama(
-            document.getElementById('pano'), {
-              position: {lat: 37.869260, lng: -122.254811},
-              pov: {
-                heading: 270,
-                pitch: 0
-              },
-              visible: true
+          document.getElementById('pano'), {
+            position: {lat: 37.86836063779704, lng: -122.25448791105612},
+            pov: {
+              heading: 0,
+              pitch: 0
+            },
+            visible: true
+    	    });
+
+        $('#start-bot').on('click', function() {
+          bot_started = 1;
+          move_randomly();
+        });
+        $('#stop-bot').on('click', function() {
+          bot_started = 0;
         });
 
-        var forward = $('#forward');
-        forward.on('click', function() {
-        	alert("moved forward")
+        $('.movement').on('click', function() {
+          ++num_movements;
+          console.log(num_movements);
+        	setTimeout(function(){
+            move_randomly();
+          }, 1000);
         });
 
         panorama.addListener('pano_changed', function() {
+        	// console.log('pano changed');
             var panoCell = document.getElementById('pano-cell');
             panoCell.innerHTML = panorama.getPano();
         });
 
         panorama.addListener('links_changed', function() {
-            var linksTable = document.getElementById('links_table');
-            while (linksTable.hasChildNodes()) {
-              linksTable.removeChild(linksTable.lastChild);
-            }
-            var links = panorama.getLinks();
-            for (var i in links) {
-              var row = document.createElement('tr');
-              linksTable.appendChild(row);
-              var labelCell = document.createElement('td');
-              labelCell.innerHTML = '<b>Link: ' + i + '</b>';
-              var valueCell = document.createElement('td');
-              valueCell.innerHTML = links[i].description;
-              linksTable.appendChild(labelCell);
-              linksTable.appendChild(valueCell);
-            }
+        	// console.log('links changed');        	
+        	var linksTable = document.getElementById('links_table');
+          while (linksTable.hasChildNodes()) {
+            linksTable.removeChild(linksTable.lastChild);
+          }
+          var links = panorama.getLinks();
+          // update global count
+          num_links = links.length;
+          for (var i in links) {
+            var row = document.createElement('tr');
+            linksTable.appendChild(row);
+            var labelCell = document.createElement('td');
+            labelCell.innerHTML = '<b>Link: ' + i + '</b>';
+            var valueCell = document.createElement('td');
+            valueCell.innerHTML = links[i].description;
+            linksTable.appendChild(labelCell);
+            linksTable.appendChild(valueCell);
+          }
+
+          // MAIN BOT
+          if (bot_started == 1) {
+            var pos = panorama.getPosition();
+            var lat = pos.lat();
+            var lng = pos.lng();
+            // getPhoto(streetview_url, image_size, lat, lng, fov, heading, pitch, streetview_key)
+            // .then(sv_response => {
+            //   console.log("street view response: " + sv_response);
+            //   // sendPhoto(api_url)
+            //   // .then(flask_response => {
+            //   //   console.log("flask response: " + flask_response);
+            //   // });
+            // });
+            $("#move").click();
+          }
         });
 
         panorama.addListener('position_changed', function() {
-            var positionCell = document.getElementById('position-cell');
-            positionCell.firstChild.nodeValue = panorama.getPosition() + '';
+          var positionCell = document.getElementById('position-cell');
+          positionCell.firstChild.nodeValue = panorama.getPosition() + '';
         });
 
         panorama.addListener('pov_changed', function() {
-            var headingCell = document.getElementById('heading-cell');
-            var pitchCell = document.getElementById('pitch-cell');
-            headingCell.firstChild.nodeValue = panorama.getPov().heading + '';
-            pitchCell.firstChild.nodeValue = panorama.getPov().pitch + '';
+          var headingCell = document.getElementById('heading-cell');
+          var pitchCell = document.getElementById('pitch-cell');
+          headingCell.firstChild.nodeValue = panorama.getPov().heading + '';
+          pitchCell.firstChild.nodeValue = panorama.getPov().pitch + '';
         });
-      }
 
-      function difference(link) {
-      	return Math.abs(pano.pov.heading%360 - link.heading);
-	  }
+        function difference(link) {
+          return Math.abs(panorama.pov.heading % 360 - link.heading);
+        }
 
-	  function moveForward() {
-	  	var curr;
-	  	for(i=0; i < pano.links.length; i++) {
-	  	  var differ = difference(pano.links[i]);
-	  	  if(curr == undefined) {
-	  	  	curr = pano.links[i];
-	  	  }
+        function move(i) {
+          function turn(angle) {
+            // var new_heading = (panorama.pov.heading - angle) % 360
+            var new_heading = angle % 360
+            panorama.setPov({
+              heading: new_heading,
+              pitch: 0
+            });
+          }
 
-		  if(difference(curr) > difference(pano.links[i])) {
-		  	curr = curr = pano.links[i];
-		  }
-		}
-		  pano.setPano(curr.pano);
-	  }	  
+          var current;
+          var links = panorama.links;
+
+          var differ = difference(links[i]);
+          if(current == undefined) {
+            current = links[i];
+          }
+
+          if(difference(current) > differ) {
+            current = current = links[i];
+          }
+
+          turn(links[i].heading);
+          panorama.setPano(current.pano);
+        }
+
+        function move_randomly() {
+          var relative_headings = [];
+          for (link of panorama.links) {
+            relative_headings.push(Math.abs(previous_heading - link.heading));
+          }
+
+          // console.log("previous_heading: " + previous_heading);
+          // console.log(relative_headings);
+          var min_heading = Math.min(...relative_headings)
+          var min_link = relative_headings.indexOf(min_heading);
+          // console.log("min_heading: " + min_heading);
+          previous_heading = panorama.links[min_link].heading;
+
+          move(min_link);
+        }
+
+
+        async function getPhoto(base_url, size, lat, lon, fov, heading, pitch, api_key) {
+          var params = {
+            size: size,
+            location: lat + ',' + lon,
+            fov: fov,
+            heading: heading,
+            pitch: pitch,
+            key: api_key
+          };
+
+          var url = new URL("https://maps.googleapis.com/maps/api/streetview");
+          Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+          
+          return await $.get(url, function(response_data, status) {
+            return response_data;
+          });
+        }
+
+        async function sendPhoto(url, sequence_id, image_bytes, lat, lng) {
+            // should be a PUT
+            const body = {
+              sequence_id: sequence_id,
+              image_bytes: image_bytes,
+              lat: lat,
+              lng: lng
+            }
+            return await $.post(url, body, function(response_data, status) {
+              console.log("status: " + status, ", data: " + data);
+              return response_data;
+            });
+        }
+
+        function runBot() {
+        	// function getPhoto(base_url, size, lat, lon, fov, heading, pitch, api_key) {
+        	// 	const data = {
+         //      size: size,
+         //      location: lat + ',' + lon,
+         //      fov: fov,
+         //      heading: heading,
+         //      pitch: pitch,
+         //      key: api_key
+         //    }
+        	// 	$.get(base_url, function(data, status) {
+        	// 		console.log(status + ": " + data);
+        	// 	}, 'json');
+	        // }
+
+
+	        // for (length of sequence_lengths) {
+	        // 	for (i = 0; i < sequence_iterations; ++i) {
+	        		// click move button
+			        $("#move").click();
+			        // wait for position and links to change
+			        // get new position
+			        var position = panorama.getPosition();
+			        // get photo
+			        var getPhotoResponse = getPhoto(streetview_url, size, lat, lon, fov, heading, pitch, streetview_key);
+			        console.log(getPhotoResponse);
+			        // send photo
+			        var sendPhotoResponse = sendPhoto(api_url, image_bytes);
+			        $("#response").html('Response: ' + sendPhotoResponse);
+	        // 	}
+	        // }
+        }
+      }  
     </script>
   </head>
   <style>
+  	.movement {
+      display: block;
+  		/*display: none;*/
+  	}
     /* Always set the map height explicitly to define the size of the div
      * element that contains the map. */
     #map {
@@ -122,6 +267,14 @@
   <body>
     <div id="pano"></div>
     <div id="floating-panel">
+      <button id="start-bot">Start</button>
+      <br>
+      <button id="stop-bot">Stop</button>
+      <br>
+      <button class="movement" id="move">Move</button>
+      <p class="api-text" id="response-banner">API Response:</p>   
+      <p class="api-text" id="response"></p>
+      <br>
 	    <table>
 	      <tr>
 	        <td><b>Position</b></td><td id="position-cell">&nbsp;</td>
@@ -137,7 +290,6 @@
 	      </tr>
 	      <table id="links_table"></table>
 	    </table>
-	    <button id="forward" onclick="moveForward()">Move Forward</button>
     </div>
 
 

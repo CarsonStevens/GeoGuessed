@@ -11,8 +11,8 @@ app.config['TESTING'] = True
 @app.route('/', methods = ['GET'])
 def hello():
     # return 'Welcome to GeoGuessed!'
-    return render_template("index.html", message="Hello Flask!"); 
-    # return render_template("index.html")
+    # return render_template("index.html", message="Hello Flask!"); 
+    return render_template("index.html")
 
 @app.route('/predict', methods = ['POST'])
 def predict():
