@@ -2,6 +2,14 @@ FLASK_PORT = 5000
 FLASK_HOST = "0.0.0.0"
 DEBUG_STATUS = True
 
+# IMAGES
+IMAGE_DIR = '../images'
+SEQUENCE_DIR = '/'.join([IMAGE_DIR, 'sequences'])
+FILE_EXTENSION = 'png'
+
+# GOOGLE APIS
+API_KEY = "AIzaSyBW0wAKe8pWDHaZxZJHpN_cE-_ikQkiV7Q"
+
 # HOST
 EC2_ENDPOINT = "http://ec2-52-41-153-127.us-west-2.compute.amazonaws.com"
 EC2_PORT = 5000

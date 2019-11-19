@@ -3,3 +3,5 @@
 **/__pycache__/
 **/Pipfile
 /images/10k
+**/*json
+node_modules/*

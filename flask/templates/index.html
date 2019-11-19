@@ -84,11 +84,12 @@
             var lng = pos.lng();
             // getPhoto(streetview_url, image_size, lat, lng, fov, heading, pitch, streetview_key)
             // .then(sv_response => {
-            //   console.log("street view response: " + sv_response);
-            //   // sendPhoto(api_url)
-            //   // .then(flask_response => {
-            //   //   console.log("flask response: " + flask_response);
-            //   // });
+              // console.log("street view response: " + sv_response);
+            sendLocation(api_url, streetview_url, "test_seq", image_size, lat, lng, fov, heading, pitch, streetview_key)
+            .then(flask_response => {
+              console.log("flask response: " + flask_response);
+              $('#response').html(flask_response);
+            });
             // });
             $("#move").click();
           }
@@ -153,35 +154,62 @@
         }
 
 
-        async function getPhoto(base_url, size, lat, lon, fov, heading, pitch, api_key) {
-          var params = {
-            size: size,
-            location: lat + ',' + lon,
-            fov: fov,
-            heading: heading,
-            pitch: pitch,
-            key: api_key
-          };
+        // async function getPhoto(base_url, size, lat, lon, fov, heading, pitch, api_key) {
+        //   var params = {
+        //     size: size,
+        //     location: lat + ',' + lon,
+        //     fov: fov,
+        //     heading: heading,
+        //     pitch: pitch,
+        //     key: api_key
+        //   };
 
-          var url = new URL("https://maps.googleapis.com/maps/api/streetview");
-          Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+        //   var url = new URL("https://maps.googleapis.com/maps/api/streetview");
+        //   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
           
-          return await $.get(url, function(response_data, status) {
-            return response_data;
-          });
-        }
+        //   // return await $.get(url, function(response_data, status) {
+            
+        //   // });
+        //   // return await fetch(url)
+        //   // .then(response => response.text()
+        //   //   .then(text => {
+        //   //     return text
+        //   //   })
+        //   // )
+        //   return await fetch(url)
+        //   .then(response => {
+        //     return response.arrayBuffer()
+        //   })
+        // }
 
-        async function sendPhoto(url, sequence_id, image_bytes, lat, lng) {
-            // should be a PUT
+        async function sendLocation(api_url, streetview_base_url, sequence_id, size, lat, lng, fov, heading, pitch, key) {
+            var photo_params = {
+              size: size,
+              location: lat + ',' + lng,
+              fov: fov,
+              heading: heading,
+              pitch: pitch,
+              key: key
+            };
+            var full_url = new URL("https://maps.googleapis.com/maps/api/streetview");
+            Object.keys(photo_params).forEach(key => full_url.searchParams.append(key, photo_params[key]));
+
             const body = {
               sequence_id: sequence_id,
-              image_bytes: image_bytes,
-              lat: lat,
-              lng: lng
+              image_url: full_url,
+              lat: lat.toString(),
+              lng: lng.toString()
             }
-            return await $.post(url, body, function(response_data, status) {
-              console.log("status: " + status, ", data: " + data);
-              return response_data;
+
+            // should be a PUT
+            $.ajax({
+                url: api_url,
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(body),
+                success: function(data){
+                  console.log(data)
+                }
             });
         }
 
